@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maa Samaleswari Restaurant - Ledger</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Home Page -->
+        <div id="homePage">
+            <div class="header">
+                <div class="header-content">
+                    <span class="restaurant-icon">🍽️</span>
+                    <h1>
+                        Maa Samaleswari Restaurant
+                        <span class="subtitle">LEDGER MANAGEMENT</span>
+                    </h1>
+                </div>
+                <div class="settings-icon" onclick="showSettings()">⚙️</div>
+            </div>
+            <div class="content">
+                <div class="customer-list" id="customerList"></div>
+            </div>
+        </div>
+
+        <!-- Ledger Page -->
+        <div id="ledgerPage" class="ledger-page">
+            <div class="header">
+                <div class="header-content">
+                    <span class="restaurant-icon">📊</span>
+                    <h1 id="ledgerCustomerName"></h1>
+                </div>
+                <div class="header-icons">
+                    <div class="send-sms-icon" onclick="sendBalanceSMS()" title="Send Balance via SMS/WhatsApp">💬</div>
+                    <div class="export-icon-header" onclick="exportLedger()" title="Export Ledger">📥</div>
+                </div>
+            </div>
+            <div class="content">
+                <button class="back-btn" onclick="goToHome()">← Back to Home</button>
+                
+                <div class="balance-card">
+                    <div class="balance-label" id="balanceLabel">Total Credit</div>
+                    <div class="balance-amount" id="balanceAmount">₹0</div>
+                </div>
+
+                <div class="filter-section">
+                    <select id="monthFilter" onchange="filterTransactions()">
+                        <option value="all">All Months</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn credit-btn" onclick="showTransactionModal('credit')">+ Add Credit</button>
+                    <button class="action-btn payment-btn" onclick="showTransactionModal('payment')">💰 Add Payment</button>
+                </div>
+
+                <div class="transactions-list" id="transactionsList"></div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="settings-page">
+            <div class="header">
+                <div class="header-content">
+                    <span class="restaurant-icon">⚙️</span>
+                    <h1>Settings</h1>
+                </div>
+            </div>
+            <div class="content">
+                <button class="back-btn" onclick="goToHome()">← Back to Home</button>
+
+                <div class="settings-section">
+                    <div class="settings-title">Change Master Password</div>
+                    <div class="error-message" id="masterPasswordError"></div>
+                    <div class="success-message" id="masterPasswordSuccess"></div>
+                    <div class="form-group">
+                        <label>Current Master Password</label>
+                        <input type="password" id="oldMasterPassword" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label>New Master Password</label>
+                        <input type="password" id="newMasterPassword" placeholder="Enter new password">
+                    </div>
+                    <button class="btn btn-primary" onclick="changeMasterPassword()">Update Master Password</button>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-title">Change Customer PIN</div>
+                    <div class="error-message" id="pinChangeError"></div>
+                    <div class="success-message" id="pinChangeSuccess"></div>
+                    <div class="form-group">
+                        <label>Master Password</label>
+                        <input type="password" id="pinChangeMasterPassword" placeholder="Enter master password">
+                    </div>
+                    <div class="form-group">
+                        <label>Select Customer</label>
+                        <select id="customerSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>New PIN</label>
+                        <input type="text" id="newCustomerPin" placeholder="Enter new PIN">
+                    </div>
+                    <button class="btn btn-primary" onclick="changeCustomerPin()">Update Customer PIN</button>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-title">💾 Backup & Restore</div>
+                    <div class="error-message" id="backupError"></div>
+                    <div class="success-message" id="backupSuccess"></div>
+                    
+                    <div class="backup-actions">
+                        <div class="backup-info">
+                            <p>📦 <strong>Create Backup:</strong> Download all customer data as a backup file</p>
+                            <button class="btn btn-backup" onclick="createBackup()">
+                                <span class="backup-icon">💾</span> Download Backup Now
+                            </button>
+                        </div>
+                        
+                        <div class="backup-info auto-backup-section">
+                            <p>🕐 <strong>Automatic Daily Backup:</strong> Auto-download backup every day at 2:00 AM</p>
+                            <div class="auto-backup-toggle">
+                                <label class="switch">
+                                    <input type="checkbox" id="autoBackupToggle" onchange="toggleAutoBackup()">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="toggle-label" id="autoBackupStatus">Disabled</span>
+                            </div>
+                            <p class="backup-note">💡 Keep this page open or running for auto-backup to work</p>
+                        </div>
+                        
+                        <div class="restore-info">
+                            <p>📤 <strong>Restore Backup:</strong> Upload a backup file to restore all data</p>
+                            <input type="file" id="backupFile" accept=".json" style="display: none;" onchange="handleBackupFile()">
+                            <button class="btn btn-restore" onclick="document.getElementById('backupFile').click()">
+                                <span class="restore-icon">📤</span> Upload & Restore
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="backup-warning">
+                        <strong>⚠️ Warning:</strong> Restoring a backup will replace ALL current data!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Customer Button (Only on Home Page) -->
+    <button class="floating-add-btn" id="floatingAddBtn" onclick="showAddCustomerModal()" title="Add New Customer">+</button>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add New Customer</div>
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="customerName" placeholder="Enter customer name">
+            </div>
+            <div class="form-group">
+                <label>PIN (4 digits)</label>
+                <input type="text" id="customerPin" placeholder="Enter 4-digit PIN" maxlength="4">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addCustomer()">Add Customer</button>
+                <button class="btn btn-secondary" onclick="closeModal('addCustomerModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Verification Modal -->
+    <div id="pinModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Enter PIN</div>
+            <div class="error-message" id="pinError"></div>
+            <div class="form-group">
+                <label>Enter PIN to view ledger</label>
+                <input type="password" id="pinInput" placeholder="Enter PIN" maxlength="4">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="verifyPin()">Verify</button>
+                <button class="btn btn-secondary" onclick="closeModal('pinModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="transactionModalTitle"></div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="transactionDate" required>
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" id="transactionTime" required>
+            </div>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="transactionAmount" placeholder="Enter amount" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Note / Description</label>
+                <textarea id="transactionDescription" placeholder="Enter note or description" rows="3"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addTransaction()">Add</button>
+                <button class="btn btn-secondary" onclick="closeModal('transactionModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Transaction Modal -->
+    <div id="deleteTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Delete Transaction</div>
+            <div class="error-message" id="deleteError"></div>
+            <div class="form-group">
+                <label>Enter Master Password</label>
+                <input type="password" id="deleteMasterPassword" placeholder="Enter master password">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="confirmDeleteTransaction()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeModal('deleteTransactionModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

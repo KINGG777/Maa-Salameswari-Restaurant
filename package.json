@@ -1,0 +1,28 @@
+{
+  "name": "maa-samaleswari-restaurant-ledger",
+  "version": "3.0.0",
+  "description": "Professional Restaurant Ledger Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete! All files are ready for deployment.' && npm run copy-files",
+    "copy-files": "echo 'Files ready in current directory'"
+  },
+  "keywords": [
+    "restaurant",
+    "ledger",
+    "accounting",
+    "management"
+  ],
+  "author": "Maa Samaleswari Restaurant",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
