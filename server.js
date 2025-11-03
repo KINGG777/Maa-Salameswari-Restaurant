@@ -109,7 +109,7 @@ app.get('/api/customers/:id/ledger', (req, res) => {
 // Add transaction
 app.post('/api/customers/:id/transactions', (req, res) => {
     const { id } = req.params;
-    const { type, amount, description } = req.body;
+    const { type, amount, description, date } = req.body;
     const customers = readCustomers();
     const customerIndex = customers.findIndex(c => c.id === id);
     
@@ -119,7 +119,7 @@ app.post('/api/customers/:id/transactions', (req, res) => {
             type, // 'credit' or 'payment'
             amount: parseFloat(amount),
             description,
-            date: new Date().toISOString()
+            date: date || new Date().toISOString() // Use provided date or current time as fallback
         };
         
         customers[customerIndex].transactions.push(transaction);

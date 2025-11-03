@@ -219,19 +219,26 @@ function calculateBalance() {
     
     const balanceLabel = document.getElementById('balanceLabel');
     const balanceAmount = document.getElementById('balanceAmount');
+    const balanceCard = document.querySelector('.balance-card');
+    
+    // Remove all balance type classes
+    balanceCard.classList.remove('balance-credit', 'balance-advance', 'balance-zero');
     
     if (balance > 0) {
         balanceLabel.textContent = 'Total Credit';
         balanceAmount.textContent = `₹${balance.toFixed(2)}`;
-        balanceAmount.style.color = '#dc3545'; // RED for credit (outstanding)
+        balanceAmount.style.color = 'white';
+        balanceCard.classList.add('balance-credit'); // RED background
     } else if (balance < 0) {
         balanceLabel.textContent = 'Total Advance';
         balanceAmount.textContent = `₹${Math.abs(balance).toFixed(2)}`;
-        balanceAmount.style.color = '#28a745'; // GREEN for advance (customer paid more)
+        balanceAmount.style.color = 'white';
+        balanceCard.classList.add('balance-advance'); // GREEN background
     } else {
         balanceLabel.textContent = 'Balance';
         balanceAmount.textContent = '₹0.00';
         balanceAmount.style.color = 'white';
+        balanceCard.classList.add('balance-zero'); // Default background
     }
 }
 
@@ -351,26 +358,14 @@ async function addTransaction() {
         return;
     }
     
-    // Create date from individual components to avoid timezone issues
-    const [year, month, day] = dateInput.split('-');
-    const [hour, minute] = timeInput.split(':');
-    
-    // Create date in local timezone
-    const transactionDate = new Date(
-        parseInt(year),
-        parseInt(month) - 1, // Month is 0-indexed
-        parseInt(day),
-        parseInt(hour),
-        parseInt(minute),
-        0, // seconds
-        0  // milliseconds
-    );
+    // Store as local datetime string (no timezone conversion)
+    const dateTimeString = `${dateInput}T${timeInput}:00`;
     
     await apiCall(`/api/customers/${currentCustomerId}/transactions`, 'POST', {
         type: currentTransactionType,
         amount,
         description,
-        date: transactionDate.toISOString()
+        date: dateTimeString
     });
     
     closeModal('transactionModal');
@@ -1007,3 +1002,15 @@ function toggleAutoBackup() {
     }
 }
 
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then((registration) => {
+                console.log('ServiceWorker registration successful');
+            })
+            .catch((err) => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
+}
