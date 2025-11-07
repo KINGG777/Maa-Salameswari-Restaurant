@@ -1,0 +1,7 @@
+nohup npm start > app.log 2>&1 & sleep 5 && nohup cloudflared tunnel --url http://localhost:3000 > cf.log 2>&1 & sleep 5 && grep "trycloudflare.com" cf.log
+
+
+Stop All Process 
+
+pkill -f node
+pkill -f cloudflared
